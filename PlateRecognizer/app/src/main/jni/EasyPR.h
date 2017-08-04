@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 JNIEXPORT jstring JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_stringFromJNI(JNIEnv *, jclass);
-JNIEXPORT jlong JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_initPR(JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT jlong JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_initPR(JNIEnv *, jclass, jstring, jstring, jstring, jstring, jstring);
 JNIEXPORT jlong JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_uninitPR(JNIEnv *, jclass, jlong);
 JNIEXPORT jbyteArray JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_plateRecognize(JNIEnv *, jclass, jlong, jstring);
 

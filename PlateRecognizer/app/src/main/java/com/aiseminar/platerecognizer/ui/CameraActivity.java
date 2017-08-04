@@ -48,9 +48,6 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
     @Bind(R.id.svCamera)
     SurfaceView mSvCamera;
 
-    @Bind(R.id.ivPlateRect)
-    ImageView mIvPlateRect;
-
     @Bind(R.id.ivCapturePhoto)
     ImageView mIvCapturePhoto;
 
@@ -339,7 +336,7 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
 //                }
                 // 最后通知图库更新
                 CameraActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + pictureFile.getAbsolutePath())));
-                Toast.makeText(CameraActivity.this, "图像已保存。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraActivity.this, "图像已保存:" + pictureFile, Toast.LENGTH_SHORT).show();
             } catch (FileNotFoundException e) {
                 Log.d(TAG, "File not found: " + e.getMessage());
             } catch (IOException e) {
@@ -430,13 +427,13 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         int height = metric.heightPixels;  // 屏幕高度（像素）
         Bitmap sizeBitmap = Bitmap.createScaledBitmap(originalBitmap, width, height, true);
 
-        int rectWidth = (int)(mIvPlateRect.getWidth() * 1.5);
-        int rectHight = (int)(mIvPlateRect.getHeight() * 1.5);
-        int[] location = new int[2];
-        mIvPlateRect.getLocationOnScreen(location);
-        location[0] -= mIvPlateRect.getWidth() * 0.5 / 2;
-        location[1] -= mIvPlateRect.getHeight() * 0.5 / 2;
-        Bitmap normalBitmap = Bitmap.createBitmap(sizeBitmap, location[0], location[1], rectWidth, rectHight);
+//        int rectWidth = (int)(mIvPlateRect.getWidth() * 1.5);
+//        int rectHight = (int)(mIvPlateRect.getHeight() * 1.5);
+//        int[] location = new int[2];
+//        mIvPlateRect.getLocationOnScreen(location);
+//        location[0] -= mIvPlateRect.getWidth() * 0.5 / 2;
+//        location[1] -= mIvPlateRect.getHeight() * 0.5 / 2;
+//        Bitmap normalBitmap = Bitmap.createBitmap(sizeBitmap, location[0], location[1], rectWidth, rectHight);
 
         // 保存图片并进行车牌识别
         File pictureFile = FileUtil.getOutputMediaFile(FileUtil.FILE_TYPE_PLATE);
@@ -446,15 +443,17 @@ public class CameraActivity extends BaseActivity implements SurfaceHolder.Callba
         }
 
         try {
-            mTvPlateResult.setText("正在识别...");
+            Log.println(Log.INFO, TAG, "recognizing...");
+            mTvPlateResult.setText("recognizing...");
             FileOutputStream fos = new FileOutputStream(pictureFile);
-            normalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            originalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            //normalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.close();
             // 最后通知图库更新
             CameraActivity.this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + pictureFile.getAbsolutePath())));
-
             // 进行车牌识别
             String plate = mPlateRecognizer.recognize(pictureFile.getAbsolutePath());
+            Log.println(Log.INFO, TAG, "plate:" + plate);
             if (null != plate && ! plate.equalsIgnoreCase("0")) {
                 mTvPlateResult.setText(plate);
             } else {

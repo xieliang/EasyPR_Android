@@ -16,26 +16,38 @@
 #include "chars_recognise.h"
 
 /*! \namespace easypr
-    Namespace where all the C++ EasyPR functionality resides
+Namespace where all the C++ EasyPR functionality resides
 */
 namespace easypr {
 
-class CPlateRecognize : public CPlateDetect, public CCharsRecognise {
- public:
-  CPlateRecognize();
+  class CPlateRecognize : public CPlateDetect, public CCharsRecognise {
+  public:
+    CPlateRecognize();
 
-  //! 车牌检测与字符识别
+    int plateRecognize(const Mat& src, std::vector<CPlate> &plateVec, int img_index = 0);
+    int plateRecognize(const Mat& src, std::vector<std::string> &licenseVec);
 
-  int plateRecognize(Mat src, std::vector<std::string> &licenseVec);
+    inline void setLifemode(bool param) { CPlateDetect::setPDLifemode(param); }
+    inline void setDetectType(int param) { CPlateDetect::setDetectType(param); }
 
-  //! 生活模式与工业模式切换
+    inline void setResultShow(bool param) { m_showResult = param; }
+    inline bool getResultShow() const { return m_showResult; }
+    inline void setDetectShow(bool param) { CPlateDetect::setDetectShow(param); }
+    inline void setDebug(bool param) { setResultShow(param); }
 
-  inline void setLifemode(bool param) { CPlateDetect::setPDLifemode(param); }
+    void LoadSVM(std::string path);
+    void LoadANN(std::string path);
+    void LoadChineseANN(std::string path);
 
-  //! 是否开启调试模式
+    //v1.6 added
+    void LoadGrayChANN(std::string path);
+    void LoadChineseMapping(std::string path);
 
-  inline void setDebug(bool param) { CPlateDetect::setPDDebug(param); }
-};
+  private:
+    // show the detect and recognition result image
+    bool m_showResult;
+    DISABLE_ASSIGN_AND_COPY(CPlateRecognize);
+  };
 
 } /* \namespace easypr  */
 

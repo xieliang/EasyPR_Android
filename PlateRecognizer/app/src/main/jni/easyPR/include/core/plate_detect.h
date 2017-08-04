@@ -12,26 +12,44 @@ class CPlateDetect {
 
   ~CPlateDetect();
 
-  //! 深度车牌检测，使用颜色与二次Sobel法综合
+  /** @brief Plate detect in an image.
 
-  int plateDetect(Mat src, std::vector<CPlate> &resultVec, bool showDetectArea = true, int index = 0);
+  The function detects plate in an image. It can use sobel, color, and character method or the combinations of them.
 
-  //! 展示中间的结果
-  int showResult(const Mat &result);
+  @param src Source image. 
+  @param resultVec Destination vector of CPlate.
+  @param type Detect type. (eg. PR_DETECT_SOBEL + PR_DETECT_COLOR)
+  @param showDetectArea 
+  @param index
+  */
+  int plateDetect(Mat src, std::vector<CPlate> &resultVec, int type,
+                  bool showDetectArea, int img_index = 0);
 
-  //! 装载SVM模型
-  void loadSVM(const char* s);
 
-  //! 生活模式与工业模式切换
+  /** @brief Plate detect in an image.
+
+  The function detects plate in an image. It can use sobel, color, and character method or the combinations of them. 
+  Use default m_type, it can use setDetectType() to set it;
+
+  @param src Source image.
+  @param resultVec Destination vector of CPlate.
+  @param index
+  */
+  int plateDetect(Mat src, std::vector<CPlate> &resultVec, int img_index = 0);
+
+  void LoadSVM(std::string s);
+
   inline void setPDLifemode(bool param) { m_plateLocate->setLifemode(param); }
 
-  //! 是否开启调试模式
-  inline void setPDDebug(bool param) { m_plateLocate->setDebug(param); }
+  inline void setPDDebug(bool param) { 
+    m_plateLocate->setDebug(param); 
+    setDetectShow(param);
+  }
 
-  //! 获取调试模式状态
   inline bool getPDDebug() { return m_plateLocate->getDebug(); }
 
-  //! 设置与读取变量
+  inline void setDetectType(int param) { m_type = param; }
+
   inline void setGaussianBlurSize(int param) {
     m_plateLocate->setGaussianBlurSize(param);
   }
@@ -82,13 +100,24 @@ class CPlateDetect {
 
   inline int getMaxPlates() const { return m_maxPlates; }
 
+  inline void setDetectShow(bool param) { m_showDetect = param; }
+  inline bool getDetectShow() const { return m_showDetect; }
+
  private:
 
-  //! 设置一幅图中最多有多少车牌
   int m_maxPlates;
 
-  //! 车牌定位
+  //SceneMode m_mode;
+
   CPlateLocate* m_plateLocate;
+
+  int m_type;
+
+  static std::string m_pathSvm;
+
+  // show the detect result image
+  bool m_showDetect;
+
 };
 
 }

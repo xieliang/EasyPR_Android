@@ -38,22 +38,27 @@ char* jstring2str(JNIEnv* env, jstring jstr) {
 	return rtn;
 }
 
-JNIEXPORT jlong JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_initPR(JNIEnv *env, jclass instance, jstring svmpath, jstring annpath) {
-//	const string *svm = (*env)->GetStringUTFChars(env, svmpath, 0);
-//	const string *ann = (*env)->GetStringUTFChars(env, annpath, 0);
+JNIEXPORT jlong JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_initPR(JNIEnv *env, jclass instance, jstring svmpath, jstring annpath,
+    jstring channpath, jstring graychpath, jstring chmappingpath) {
 	char* svm = jstring2str(env, svmpath);
 	char* ann = jstring2str(env, annpath);
+	char* chann = jstring2str(env, channpath);
+	char* graych = jstring2str(env, graychpath);
+	char* chmapping = jstring2str(env, chmappingpath);
 
 	CPlateRecognize *pr = new CPlateRecognize();
 
 	pr->setDebug(false);
 	pr->setLifemode(true);
-    pr->setMaxPlates(4);
+	pr->setMaxPlates(4);
 
-    pr->loadSVM(svm);
-    pr->loadANN(ann);
+	pr->LoadSVM(svm);
+	pr->LoadANN(ann);
+    pr->LoadChineseANN(chann);
+    pr->LoadGrayChANN(graych);
+    pr->LoadChineseMapping(chmapping);
 
-    return (jlong)pr;
+	return (jlong)pr;
 }
 
 JNIEXPORT jlong JNICALL Java_com_aiseminar_EasyPR_PlateRecognizer_uninitPR(JNIEnv *env, jclass instance, jlong recognizerPtr) {

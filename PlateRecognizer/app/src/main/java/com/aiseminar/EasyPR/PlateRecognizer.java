@@ -16,20 +16,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-/**
- * Created by ares on 6/19/16.
- */
 public class PlateRecognizer {
     private Context mContext;
     private String mSvmpath = null;
     private String mAnnpath = null;
+    private String mChAnnpath = null;
+    private String mGrayChpath = null;
+    private String mChMappingpath = null;
     private boolean mRecognizerInited = false;
     private long mRecognizerPtr = 0;
 
     public PlateRecognizer(Context context) {
         mContext = context;
         if (checkAndUpdateModelFile()) {
-            mRecognizerPtr = initPR(mSvmpath, mAnnpath);
+            mRecognizerPtr = initPR(mSvmpath, mAnnpath, mChAnnpath, mGrayChpath, mChMappingpath);
             if (0 != mRecognizerPtr) {
                 mRecognizerInited = true;
             }
@@ -49,13 +49,18 @@ public class PlateRecognizer {
 
         mSvmpath = FileUtil.getMediaFilePath(FileUtil.FILE_TYPE_SVM_MODEL);
         mAnnpath = FileUtil.getMediaFilePath(FileUtil.FILE_TYPE_ANN_MODEL);
-
+        mChAnnpath = FileUtil.getMediaFilePath(FileUtil.FILE_TYPE_CHANN_MODEL);
+        mGrayChpath = FileUtil.getMediaFilePath(FileUtil.FILE_TYPE_GRAYCH_MODEL);
+        mChMappingpath = FileUtil.getMediaFilePath(FileUtil.FILE_TYPE_CHMAPPING_MODEL);
         //如果模型文件不存在从APP的资源中拷贝
         File svmFile = FileUtil.getOutputMediaFile(FileUtil.FILE_TYPE_SVM_MODEL);
         File annFile = FileUtil.getOutputMediaFile(FileUtil.FILE_TYPE_ANN_MODEL);
+        File channFile = FileUtil.getOutputMediaFile(FileUtil.FILE_TYPE_CHANN_MODEL);
+        File graychFile = FileUtil.getOutputMediaFile(FileUtil.FILE_TYPE_GRAYCH_MODEL);
+        File chmappingFile = FileUtil.getOutputMediaFile(FileUtil.FILE_TYPE_CHMAPPING_MODEL);
         if (/*! svmFile.exists()*/true) {
             try {
-                InputStream fis = mContext.getResources().openRawResource(R.raw.svm);
+                InputStream fis = mContext.getResources().openRawResource(R.raw.svm_hist);
                 FileOutputStream fos = new FileOutputStream(svmFile);
                 byte[] buffer = new byte[8192];
                 int count = 0;
@@ -87,11 +92,63 @@ public class PlateRecognizer {
                 Log.d("PlateRecognizer", "Error accessing file: " + e.getMessage());
             }
         }
-
-        if (svmFile.exists() && annFile.exists()) {
-            return true;
+        if (/*! channFile.exists()*/true) {
+            try {
+                InputStream fis = mContext.getResources().openRawResource(R.raw.ann_chinese);
+                FileOutputStream fos = new FileOutputStream(channFile);
+                byte[] buffer = new byte[8192];
+                int count = 0;
+                while ((count = fis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, count);
+                }
+                fos.close();
+                fis.close();
+            } catch (FileNotFoundException e) {
+                Log.d("PlateRecognizer", "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d("PlateRecognizer", "Error accessing file: " + e.getMessage());
+            }
         }
-        return false;
+        if (/*! graychFile.exists()*/true) {
+            try {
+                InputStream fis = mContext.getResources().openRawResource(R.raw.annch);
+                FileOutputStream fos = new FileOutputStream(graychFile);
+                byte[] buffer = new byte[8192];
+                int count = 0;
+                while ((count = fis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, count);
+                }
+                fos.close();
+                fis.close();
+            } catch (FileNotFoundException e) {
+                Log.d("PlateRecognizer", "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d("PlateRecognizer", "Error accessing file: " + e.getMessage());
+            }
+        }
+        if (/*! chmappingFile.exists()*/true) {
+            try {
+                InputStream fis = mContext.getResources().openRawResource(R.raw.province_mapping);
+                FileOutputStream fos = new FileOutputStream(chmappingFile);
+                byte[] buffer = new byte[8192];
+                int count = 0;
+                while ((count = fis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, count);
+                }
+                fos.close();
+                fis.close();
+            } catch (FileNotFoundException e) {
+                Log.d("PlateRecognizer", "File not found: " + e.getMessage());
+            } catch (IOException e) {
+                Log.d("PlateRecognizer", "Error accessing file: " + e.getMessage());
+            }
+        }
+        Log.d("PlateRecognizer", "svmFile len: " + svmFile.length());
+        Log.d("PlateRecognizer", "annFile len: " + annFile.length());
+        Log.d("PlateRecognizer", "channFile len: " + channFile.length());
+        Log.d("PlateRecognizer", "graychFile len: " + graychFile.length());
+        Log.d("PlateRecognizer", "chmappingFile len: " + chmappingFile.length());
+        return svmFile.exists() && annFile.exists() && channFile.exists() && graychFile.exists() && chmappingFile.exists();
     }
 
     public String recognize(String imagePath) {
@@ -128,7 +185,7 @@ public class PlateRecognizer {
     }
 
     public static native String stringFromJNI();
-    public static native long initPR(String svmpath, String annpath);
+    public static native long initPR(String svmpath, String annpath, String channpath, String graychpath, String chmappingpath);
     public static native long uninitPR(long recognizerPtr);
     public static native byte[] plateRecognize(long recognizerPtr, String imgpath);
 }

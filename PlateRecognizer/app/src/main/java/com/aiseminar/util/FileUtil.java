@@ -6,17 +6,17 @@ import android.util.Log;
 import java.io.File;
 import java.util.Date;
 
-/**
- * Created by ares on 6/20/16.
- */
 public class FileUtil {
     public static final int FILE_TYPE_IMAGE = 1;
     public static final int FILE_TYPE_PLATE = 2;
     public static final int FILE_TYPE_SVM_MODEL = 3;
     public static final int FILE_TYPE_ANN_MODEL = 4;
+    public static final int FILE_TYPE_CHANN_MODEL = 5;
+    public static final int FILE_TYPE_GRAYCH_MODEL = 6;
+    public static final int FILE_TYPE_CHMAPPING_MODEL = 7;
 
     /**
-     * Create a File for saving an image or video
+     * Create a File for saving media file
      */
     public static File getOutputMediaFile(int type) {
         // To be safe, you should check that the SDCard is mounted
@@ -34,7 +34,10 @@ public class FileUtil {
                 break;
             }
             case FILE_TYPE_ANN_MODEL:
-            case FILE_TYPE_SVM_MODEL: {
+            case FILE_TYPE_SVM_MODEL:
+            case FILE_TYPE_CHANN_MODEL:
+            case FILE_TYPE_GRAYCH_MODEL:
+            case FILE_TYPE_CHMAPPING_MODEL: {
                 mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                         "PlateRcognizer");
                 break;
@@ -70,7 +73,19 @@ public class FileUtil {
                 break;
             }
             case FILE_TYPE_SVM_MODEL: {
-                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "svm.xml");
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "svm_hist.xml");
+                break;
+            }
+            case FILE_TYPE_CHANN_MODEL: {
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "ann_chinese.xml");
+                break;
+            }
+            case FILE_TYPE_GRAYCH_MODEL: {
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "annch.xml");
+                break;
+            }
+            case FILE_TYPE_CHMAPPING_MODEL: {
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "province_mapping");
                 break;
             }
             default:
@@ -93,7 +108,25 @@ public class FileUtil {
             case FILE_TYPE_SVM_MODEL: {
                 mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                         "PlateRcognizer");
-                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "svm.xml");
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "svm_hist.xml");
+                break;
+            }
+            case FILE_TYPE_CHANN_MODEL: {
+                mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        "PlateRcognizer");
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "ann_chinese.xml");
+                break;
+            }
+            case FILE_TYPE_GRAYCH_MODEL: {
+                mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        "PlateRcognizer");
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "annch.xml");
+                break;
+            }
+            case FILE_TYPE_CHMAPPING_MODEL: {
+                mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        "PlateRcognizer");
+                mediaFile = new File(mediaStorageDir.getPath() + File.separator + "province_mapping");
                 break;
             }
             default:
